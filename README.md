@@ -23,10 +23,8 @@ Con esto solo nos quedaría levantar nuestro servicio y comprobar que todo funci
 
 ## Prueba de funcionamiento
 ### Pueba fichero html
-<<<<<<< HEAD
 ### Prueba fichero PHP
-=======
-![Foto html](https://github.com/Joel1747/proapache/blob/master/capturas/Captura%20de%20pantalla%20de%202022-11-03%2016-15-31.png)
+![Foto html](https://github.com/Joel1747/proyectoApache/blob/master/capturas/Captura%20de%20pantalla%20de%202022-11-03%2016-15-31.png)
 ### Prueba fichero PHP
-![Foto php](https://github.com/Joel1747/proapache/blob/master/capturas/Captura%20de%20pantalla%20de%202022-11-03%2016-14-47.png)
+![Foto php](https://github.com/Joel1747/proyectoApache/blob/master/capturas/Captura%20de%20pantalla%20de%202022-11-03%2016-14-47.png)
 
