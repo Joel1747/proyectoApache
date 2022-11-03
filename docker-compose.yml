@@ -1,0 +1,12 @@
+version: "3.9" 
+services:
+    asir_php:
+        ports:
+          - '80:80'
+        container_name: asir_my-apache-php-app
+        volumes:
+           - '/home/asir2a/Documentos/SRI/proapa/html:/var/www/html'
+           - confApache:/etc/apache2
+        image: 'php:7.4-apache'
+volumes:
+  confApache:        
