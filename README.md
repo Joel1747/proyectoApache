@@ -139,4 +139,8 @@ Para hacer que los ficheros de _sites-avaliables_ pasen a estar en la carpeta de
 Una vez reinicado el servicio podremos comprobar si funciona correctamente nuestros sitios, para ello buscaremos localhost:y los puertos configurados.
 
 ### Prueba Sitio 1
-
+Esta es la prueba del index.html del sitio1
+![Foto html](https://github.com/Joel1747/proyectoApache/blob/master/capturas/Prueba_sitio1.png)
+### Prueba Sitio 2
+Esta es la prueba del index.php del Sitio2
+![Foto PHP](https://github.com/Joel1747/proyectoApache/blob/master/capturas/pruebasitio2.png)
