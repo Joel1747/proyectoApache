@@ -10,4 +10,3 @@ $TTL    36000
 ns      IN      A      10.1.2.254
 oscuras    IN      A      10.1.2.250 
 maravillosas   IN      CNAME  oscuras
- 
