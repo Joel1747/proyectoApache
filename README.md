@@ -273,7 +273,7 @@ Una vez realizadas todas estas configuraciones anteriores ya solo nos queda cone
 
 ### Prueba Sitio 1
 Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
-![Foto oscuras](.png)
+![Foto oscuras](https://github.com/Joel1747/proyectoApache/blob/master/capturas/oscuras.png)
 ### Prueba Sitio 2
 Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
-![Foto maravillosas](.png)
+![Foto maravillosas](https://github.com/Joel1747/proyectoApache/blob/master/capturas/maravillosas.png)
