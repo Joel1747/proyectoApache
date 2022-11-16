@@ -1,12 +1,38 @@
 version: "3.9" 
 services:
     asir_php:
-        ports:
-          - '80:80'
-          - '8000:8000'
-        container_name: asir_my-apache-php-app
-        volumes:
-           - '/home/asir2a/Documentos/SRI/proyectoApache/html:/var/www/html'
-           - ./confApache:/etc/apache2
-        image: 'php:7.4-apache'
-        
+      ports:
+        - '80:80'
+        - '8000:8000'
+      container_name: asir_my-apache-php-app
+      volumes:
+          - '/home/asir2a/Documentos/SRI/proyectoApache/html:/var/www/html'
+          - ./confApache:/etc/apache2
+      image: 'php:7.4-apache'
+      networks:
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.250 #ip fija del servidor DNS
+    bind9:
+      container_name: asir2_bind9_pa
+      image: internetsystemsconsortium/bind9:9.16
+      ports:
+        - 5401:53/udp
+        - 5401:53/tcp
+      networks:
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.254 #ip fija del servidor DNS
+      volumes:
+        - /home/asir2a/Documentos/SRI/proyectoApache/confDNS/confg:/etc/bind
+        - /home/asir2a/Documentos/SRI/proyectoApache/confDNS/zonas:/var/lib/bind
+    asir_clientePA: 
+      container_name: asir_clientePA
+      image: alpine
+      networks:
+        - bind9_subnetPA
+      stdin_open: true
+      tty: true
+      dns:
+        - 10.1.2.254
+networks:
+    bind9_subnetPA:
+      external: true    

@@ -144,3 +144,136 @@ Esta es la prueba del index.html del sitio1
 ### Prueba Sitio 2
 Esta es la prueba del index.php del Sitio2
 ![Foto PHP](https://github.com/Joel1747/proyectoApache/blob/master/capturas/pruebasitio2.png)
+
+## Añadir el servidor _DNS_ a nuestro servidor _APACHE_
+
+Como ya vimos en practicas anteriores para montar el servidor _DNS_ tendremos que modificar el fichero _docker-compose.yml_ crear una carpera que contenga la subcarperta de _confg_ y también la de _zonas_
+
+### Fichero docker-compose.yml
+Al añadir el servidor _DNS_  y un cliente _Alpine_ nuestro fichero pasrá a quedar de la siguente manera:
+~~~
+version: "3.9" 
+services:
+    asir_php:
+      ports:
+        - '80:80'
+        - '8000:8000'
+      container_name: asir_my-apache-php-app
+      volumes:
+          - '/home/asir2a/Documentos/SRI/proyectoApache/html:/var/www/html'
+          - ./confApache:/etc/apache2
+      image: 'php:7.4-apache'
+      networks:
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.250 #ip fija del servidor DNS
+    bind9:
+      container_name: asir2_bind9_pa
+      image: internetsystemsconsortium/bind9:9.16
+      ports:
+        - 5401:53/udp
+        - 5401:53/tcp
+      networks:
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.254 #ip fija del servidor DNS
+      volumes:
+        - /home/asir2a/Documentos/SRI/proyectoApache/confDNS/confg:/etc/bind
+        - /home/asir2a/Documentos/SRI/proyectoApache/confDNS/zonas:/var/lib/bind
+    asir_clientePA: 
+      container_name: asir_clientePA
+      image: alpine
+      networks:
+        - bind9_subnetPA
+      stdin_open: true
+      tty: true
+      dns:
+        - 10.1.2.254
+networks:
+    bind9_subnetPA:
+      external: true   
+~~~
+### Carpeta _Confg_
+Esta carpeta contendrá tres ficheros que serán los siguetes:
+-_named.conf_
+-_named.conf.options(configuración forwardes)_
+-_named.conf.local_
+
+#### _named.conf_
+En este fichero se hace referencia a los otros dos ficheros que contendrán la configuración:
+~~~
+include "/etc/bind/named.conf.options";
+include "/etc/bind/named.conf.local";
+~~~
+
+#### _named.conf.options(configuración forwardes)_
+Tendremos que crear el fichero named.conf.options en el cual tendremos un código parecido a este segun las opciones que neceitemos
+~~~
+options {
+        directory "/var/cache/bind";
+
+        forwarders {
+            8.8.8.8;
+            8.8.4.4; 
+        };
+        forward only;
+
+        listen-on { any; };
+        listen-on-v6 { any; };
+        allow-query {
+            any;
+        };
+
+        allow-recursion {
+                none;
+        };
+        allow-transfer {
+                none;
+        };
+        allow-update {
+                none;
+        };
+};
+~~~
+
+#### _named.conf.local_
+Tendremos que crear el fichero named.conf.local en el cual tendremos un código parecido a este donde haremos referencia a la zona
+~~~
+zone "fabulas.com." {
+        type master;
+        file "/var/lib/bind/db.fabulas.com";
+        notify explicit;
+        allow-query {
+            any;
+        };
+};
+~~~
+
+### Carpeta _Zonas_
+En el directorio zonas solo crearemos un archivo que será el nombre de la zona en este caso db.fabulas.com en el cual habrá el siguiente código:
+~~~
+$TTL    36000
+@       IN      SOA     ns.fabulas.com. joel.danielcastelao.org. (
+                     16112022           ; Serial
+                         3600           ; Refresh [1h]
+                          600           ; Retry   [10m]
+                        86400           ; Expire  [1d]
+                          600 )         ; Negative Cache TTL [1h]
+;
+@       IN      NS     ns.fabulas.com.  
+ns      IN      A      10.1.2.254
+oscuras    IN      A      10.1.2.250 
+maravillosas   IN      CNAME  oscuras   
+~~~
+
+## Una vez añadido todo esto no hay que olvidarse de crear la _Red_ para que todo esto funcione, la cual crearemos con el siguiente comando:
+~~~
+docker network create --subnet 10.1.2.0/24 --gateway 10.1.2.1 bind9_subnetPA
+~~~
+## Prueba de funcionamento
+Una vez realizadas todas estas configuraciones anteriores ya solo nos queda conectarnos al cliente alpine que tenemos incorporado y realizar los correspondientes _pings_ para ver si resuelve los nombres de las zonas
+
+### Prueba Sitio 1
+Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
+![Foto oscuras](.png)
+### Prueba Sitio 2
+Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
+![Foto maravillosas](.png)
