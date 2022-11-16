@@ -263,7 +263,41 @@ ns      IN      A      10.1.2.254
 oscuras    IN      A      10.1.2.250 
 maravillosas   IN      CNAME  oscuras   
 ~~~
+### ficheros _sites-avaliables_
+tendremos que cambiar en los ficheros _000-default.conf_ y _002-default.conf_ el serverName para que nos lleve a los _index_ de nuestros dos sitios y al hacer el _wget_ nos descargue el correspodinete fichero. tendremos que cambiar la siguinete linea:
+#### _000-default.conf_
+realizar lo mismo para el _002-default.conf_
+~~~
+<VirtualHost *:80>
+	# The ServerName directive sets the request scheme, hostname and port that
+	# the server uses to identify itself. This is used when creating
+	# redirection URLs. In the context of virtual hosts, the ServerName
+	# specifies what hostname must appear in the request's Host: header to
+	# match this virtual host. For the default virtual host (this file) this
+	# value is not decisive as it is used as a last resort host regardless.
+	# However, you must set it for any further virtual host explicitly.
+	ServerName oscuras.fabulas.com #habilitar esta linea y cambiar la direción en este caso a oscuras
 
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/html/Sitio1
+
+	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+	# error, crit, alert, emerg.
+	# It is also possible to configure the loglevel for particular
+	# modules, e.g.
+	#LogLevel info ssl:warn
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	# For most configuration files from conf-available/, which are
+	# enabled or disabled at a global level, it is possible to
+	# include a line for only one particular virtual host. For example the
+	# following line enables the CGI configuration for this host only
+	# after it has been globally disabled with "a2disconf".
+	#Include conf-available/serve-cgi-bin.conf
+</VirtualHost>
+~~~
 ## Una vez añadido todo esto no hay que olvidarse de crear la _Red_ para que todo esto funcione, la cual crearemos con el siguiente comando:
 ~~~
 docker network create --subnet 10.1.2.0/24 --gateway 10.1.2.1 bind9_subnetPA
