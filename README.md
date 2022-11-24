@@ -424,4 +424,4 @@ Una vez configurado este fichero ya solo nos queda reiniciar el servidor apache 
 
 ### Comprobación SSL
 Ya solo nos queda entar al navegador en este caso firefox y comprobar que podemos acceder a nuestro sitio seguro.
-![Foto PruebaSSL](https://github.com/Joel1747/proyectoApache/blob/master/capturas/prubaSSL.png)
+![Foto PruebaSSL](https://raw.githubusercontent.com/Joel1747/proyectoApache/master/capturas/prubaSSL.png)
