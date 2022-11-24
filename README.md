@@ -313,3 +313,115 @@ Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctam
 Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
 ![Foto maravillosas](https://github.com/Joel1747/proyectoApache/blob/master/capturas/maravillosas.png)
 ![Foto maravillosas2](https://github.com/Joel1747/proyectoApache/blob/master/capturas/maravillosas2.png)
+
+## Uso del _directoryIndex_ 
+Sirver para elegir en nuestros _virtualhosts_ para que seleccionemos que fichero queremos que aparezca primero, en vez del _index_ que se muestra por defecto, hay un fichero para cambiarlo que es _dir.conf_ que aplica para todo los _virtualhost_, o bien como en este caso podemos configurarlo dentro de los propios _virtualhost_ 
+~~~
+<VirtualHost *:80>
+	# The ServerName directive sets the request scheme, hostname and port that
+	# the server uses to identify itself. This is used when creating
+	# redirection URLs. In the context of virtual hosts, the ServerName
+	# specifies what hostname must appear in the request's Host: header to
+	# match this virtual host. For the default virtual host (this file) this
+	# value is not decisive as it is used as a last resort host regardless.
+	# However, you must set it for any further virtual host explicitly.
+	ServerName maravillosas.fabulas.com
+
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/html/sitio2
+
+  #las lineas de a continuación seran las que cambien lo que muestre por defecto
+	<Directory "/var/www/html/sitio2">
+		DirectoryIndex patata2.html
+	</Directory>
+
+	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+	# error, crit, alert, emerg.
+	# It is also possible to configure the loglevel for particular
+	# modules, e.g.
+	#LogLevel info ssl:warn
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	# For most configuration files from conf-available/, which are
+	# enabled or disabled at a global level, it is possible to
+	# include a line for only one particular virtual host. For example the
+	# following line enables the CGI configuration for this host only
+	# after it has been globally disabled with "a2disconf".
+	#Include conf-available/serve-cgi-bin.conf
+</VirtualHost>
+~~~
+
+
+## Creación de un _sitioSSL_ 
+Vamos a crear un sitio que sea seguro para el cual necesitamos un fichero SSL, en sites avaliable encontraremos _default-ssl.conf_ que es un sitio ssl ya creado el cual podremos modificar, tenemos que acordarnos de en el fichero _portss.conf_ asegurarnos de que escuche el puerto 443
+### fichero _ports_
+como podemos observar solo escucha en el puerto 443 si esta en _enable_ el modulo _SSL_ 
+~~~
+Listen 80
+Listen 8000 
+
+<IfModule ssl_module>
+	Listen 443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+	Listen 443
+</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+~~~
+### Habilitar modulo ssl
+Para esto necesitaremos levantar el servidor y abrirlo con el visual en este caso, en el cual nos dará un terminal con root en el servidor el en cual tendremos que aplicar los siguentes comandos tanto para habilitar el _moduloSSL_ y el _sitioSSL_
+#### Comando habilitar _moduloSSL_
+~~~
+a2enmod ssl
+~~~
+#### Comando habilitar _sitioSSL_
+~~~
+a2ensite default-ssl
+~~~
+
+Una vez hecho esto tenemos que crear un certificado ssl para nuestro sitio web, lo crearemos de la sigunete manera:
+#### Creación certificado
+debemos instalar el openssl si no lo tenemos
+~~~
+apt-get update
+apt-get install apache2 openssl
+~~~
+~~~
+a2enmod ssl
+a2enmod rewrite
+~~~
+Tenemos que agragarle la siguinete linea al fichero _apache2.conf_ 
+~~~
+<Directory /var/www/html>
+AllowOverride All
+</Directory>
+~~~
+Y ya solo queda crear el certificado con las sigunetes lineas:
+~~~
+mkdir /etc/apache2/certificate
+cd /etc/apache2/certificate
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out apache-certificate.crt -keyout apache.key
+~~~
+####  _default-ssl.conf_
+Una vez creado el certificado iremos a nuestro fichero _default-ssl.conf_ en el cual pondremos el siguente código:
+~~~
+<VirtualHost *:443>
+		#ServerAdmin segura.fabulas.com
+		DocumentRoot /var/www/html/sitioSSL
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+		SSLCertificateFile	/etc/apache2/certificate/apache-certificate.crt
+		SSLCertificateKeyFile /etc/apache2/apache.key
+		
+	</VirtualHost>
+~~~
+Una vez configurado este fichero ya solo nos queda reiniciar el servidor apache para que se aplique la configuración que hemos colocado.
+
+### Comprobación SSL
+Ya solo nos queda entar al navegador en este caso firefox y comprobar que podemos acceder a nuestro sitio seguro.
+![Foto maravillosas2](https://github.com/Joel1747/proyectoApache/blob/master/capturas/maravillosas2.png)
