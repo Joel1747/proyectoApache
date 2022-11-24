@@ -4,9 +4,10 @@ services:
       ports:
         - '80:80'
         - '8000:8000'
+        - '443:443'
       container_name: asir_my-apache-php-app
       volumes:
-          - '/home/asir2a/Documentos/SRI/proyectoApache/html:/var/www/html'
+          - ./html:/var/www/html
           - ./confApache:/etc/apache2
       image: 'php:7.4-apache'
       networks:
