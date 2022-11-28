@@ -307,10 +307,12 @@ Una vez realizadas todas estas configuraciones anteriores ya solo nos queda cone
 
 ### Prueba Sitio 1
 Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
+
 ![Foto oscuras](https://github.com/Joel1747/proyectoApache/blob/master/capturas/oscuras.png)
 ![Foto oscuras2](https://github.com/Joel1747/proyectoApache/blob/master/capturas/oscuras2.png)
 ### Prueba Sitio 2
 Esta es la prueba del _ping_ a maravillosas.fabulas.com y que resuelve correctamente
+
 ![Foto maravillosas](https://github.com/Joel1747/proyectoApache/blob/master/capturas/maravillosas.png)
 ![Foto maravillosas2](https://github.com/Joel1747/proyectoApache/blob/master/capturas/maravillosas2.png)
 
@@ -424,4 +426,74 @@ Una vez configurado este fichero ya solo nos queda reiniciar el servidor apache 
 
 ### Comprobación SSL
 Ya solo nos queda entar al navegador en este caso firefox y comprobar que podemos acceder a nuestro sitio seguro.
+
 ![Foto PruebaSSL](https://raw.githubusercontent.com/Joel1747/proyectoApache/master/capturas/prubaSSL.png)
+
+## Montar Mysql
+Para montar el mysql en nuestro servidor solo tenemos que añadir a nuestro _docker-compose.yml_ quedando de la sigunete manera:
+~~~
+version: "3.9" 
+services:
+    asir_php:
+      ports:
+        - '80:80'
+        - '8000:8000'
+        - '443:443'
+      container_name: asir_my-apache-php-app
+      volumes:
+          - ./html:/var/www/html
+          - ./confApache:/etc/apache2
+      image: 'php:7.4-apache'
+      networks:
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.250 #ip fija del servidor DNS
+    bind9:
+      container_name: asir2_bind9_pa
+      image: internetsystemsconsortium/bind9:9.16
+      ports:
+        - 5401:53/udp
+        - 5401:53/tcp
+      networks:
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.254 #ip fija del servidor DNS
+      volumes:
+        - /home/asir2a/Documentos/SRI/proyectoApache/confDNS/confg:/etc/bind
+        - /home/asir2a/Documentos/SRI/proyectoApache/confDNS/zonas:/var/lib/bind
+    asir_clientePA: 
+      container_name: asir_clientePA
+      image: alpine
+      networks:
+        - bind9_subnetPA
+      stdin_open: true
+      tty: true
+      dns:
+        - 10.1.2.254
+    db:
+      image: mysql
+      container_name: asir_DB
+      command: --default-authentication-plugin=mysql_native_password
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: example
+      networks: 
+        bind9_subnetPA:
+          ipv4_address: 10.1.2.40
+
+    adminer:
+      image: adminer
+      container_name: asir_Adminer
+      restart: always
+      ports:
+        - 8080:8080
+      networks: 
+        bind9_subnetPA:
+networks:
+    bind9_subnetPA:
+      external: true    
+~~~
+
+### Comprobación Mysql
+
+Ya solo nos queda entrar en nuestro navegador y poner _localhost:8080_ para acceder y comprobar que funciona correctamente
+
+![Foto Mysql](https://github.com/Joel1747/proyectoApache/blob/master/capturas/capMysql.png)
