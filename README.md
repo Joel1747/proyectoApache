@@ -468,11 +468,11 @@ services:
       tty: true
       dns:
         - 10.1.2.254
+#Añadimos el mysql de aqui hacia abajo
     db:
       image: mysql
       container_name: asir_DB
       command: --default-authentication-plugin=mysql_native_password
-      restart: always
       environment:
         MYSQL_ROOT_PASSWORD: example
       networks: 
@@ -482,7 +482,6 @@ services:
     adminer:
       image: adminer
       container_name: asir_Adminer
-      restart: always
       ports:
         - 8080:8080
       networks: 
